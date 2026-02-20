@@ -1,0 +1,70 @@
+.code-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.code-panel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.code-panel-run {
+  padding: 0.35rem 1rem;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.code-panel-run:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.code-panel-run:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.code-panel-reset {
+  padding: 0.35rem 0.75rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: border-color 0.15s;
+}
+
+.code-panel-reset:hover {
+  border-color: var(--color-accent);
+}
+
+.code-panel-hint {
+  margin-left: auto;
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+}
+
+.code-panel-editor {
+  flex: 1;
+  padding: 1rem;
+  background: var(--color-code-bg);
+  color: var(--color-code-text);
+  border: none;
+  resize: none;
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  tab-size: 4;
+  outline: none;
+}

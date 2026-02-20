@@ -1,0 +1,49 @@
+.kata-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.kata-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 1rem;
+  background: var(--color-bg-secondary);
+}
+
+.kata-tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.kata-tab:hover {
+  color: var(--color-text);
+}
+
+.kata-tab--active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.kata-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.kata-loading,
+.kata-error {
+  padding: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.kata-error {
+  color: var(--color-error);
+}

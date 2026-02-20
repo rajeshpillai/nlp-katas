@@ -5,13 +5,44 @@ Every technique — BoW, TF-IDF, NER, Transformers — must be explained through
 
 ---
 
+## Project Structure
+
+```
+nlp-katas/
+├── frontend/                         (shared SolidJS + Tailwind CSS v4 app)
+│   ├── src/
+│   │   ├── pages/                    (landing, track-page, kata-page)
+│   │   ├── components/
+│   │   │   ├── layout/               (main-layout, sidebar, theme-toggle)
+│   │   │   ├── markdown-content/     (kata markdown renderer)
+│   │   │   └── kata-workspace/       (code-panel, output-panel, resizable)
+│   │   ├── context/                  (theme-context)
+│   │   └── lib/                      (api-client)
+│   ├── package.json
+│   └── vite.config.ts                (port 3000, proxies /api to backend)
+├── backend/
+│   └── python-nlp-katas/             (Python track: FastAPI backend + kata content)
+│       ├── main.py                   (FastAPI entry, port 8000)
+│       ├── requirements.txt
+│       ├── app/                      (routes, models, services)
+│       ├── phase-0/                  (kata markdown files)
+│       └── todo.md
+├── todo.md                           (global checklist)
+└── CLAUDE.md
+```
+
+- Each language track lives under `backend/` with its own backend server + kata content
+- Future tracks (e.g. `rust-nlp-katas`) will follow the same pattern under `backend/`
+- The `frontend/` is shared across all tracks
+
 ## Coding Conventions
 
 - All file/folder names in lowercase-hyphenated
-- Each language's katas will be in its respective folder like `python-nlp-katas`, `rust-nlp-katas` etc.
-- All katas are defined as markdown files
-- The frontend for the katas will remain the same: SolidJS, Tailwind CSS (no inline CSS, create CSS classes
-  for UI elements/components)
+- All katas are defined as markdown files in `phase-N/` directories
+- Kata file naming: `{sequence:02d}-{kata-id}.md` (e.g. `01-explore-ambiguity.md`)
+- Frontend: SolidJS + Tailwind CSS v4, TypeScript, no inline CSS (create CSS classes
+  for UI elements/components), each component gets its own `.css` file
+- Backend: FastAPI, Python, subprocess-based code execution with timeout
 - Create a global `todo.md` that tracks overall features
 - Create a `todo.md` for each track, and track language implementations
 
