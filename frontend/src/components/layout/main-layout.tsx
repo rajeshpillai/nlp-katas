@@ -1,4 +1,4 @@
-import { type Resource } from "solid-js";
+import { createSignal, type Resource } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import type { KatasResponse } from "../../lib/api-client";
 import { Sidebar } from "./sidebar";
@@ -13,15 +13,30 @@ interface Props {
 
 export function MainLayout(props: Props) {
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = createSignal(true);
 
   return (
     <div class="main-layout">
-      <Sidebar trackId={props.trackId} katasData={props.katasData} />
+      <div
+        class="main-layout-sidebar"
+        classList={{ "main-layout-sidebar--collapsed": !sidebarOpen() }}
+      >
+        <Sidebar trackId={props.trackId} katasData={props.katasData} />
+      </div>
       <div class="main-layout-content">
         <header class="main-layout-header">
-          <button class="main-layout-home" onClick={() => navigate("/")}>
-            NLP Katas
-          </button>
+          <div class="main-layout-header-left">
+            <button
+              class="main-layout-menu-btn"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              aria-label={sidebarOpen() ? "Close sidebar" : "Open sidebar"}
+            >
+              {sidebarOpen() ? "\u2715" : "\u2630"}
+            </button>
+            <button class="main-layout-home" onClick={() => navigate("/")}>
+              NLP Katas
+            </button>
+          </div>
           <ThemeToggle />
         </header>
         <main class="main-layout-main">

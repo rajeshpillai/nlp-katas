@@ -9,7 +9,11 @@ import {
 } from "@codemirror/commands";
 import { keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
 import { useTheme } from "../../context/theme-context";
-import { lightThemeExtension, darkThemeExtension } from "./editor-theme";
+import {
+  editorTheme,
+  lightSyntaxHighlighting,
+  darkSyntaxHighlighting,
+} from "./editor-theme";
 import "./code-panel.css";
 
 interface Props {
@@ -54,8 +58,9 @@ export function CodePanel(props: Props) {
     ])
   );
 
+  createExtension(editorTheme);
   createExtension(() =>
-    theme() === "dark" ? darkThemeExtension : lightThemeExtension
+    theme() === "dark" ? darkSyntaxHighlighting : lightSyntaxHighlighting
   );
 
   return (
