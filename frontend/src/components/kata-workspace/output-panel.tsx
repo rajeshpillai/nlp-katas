@@ -1,6 +1,13 @@
-import { Show } from "solid-js";
+import { Show, For, Switch, Match } from "solid-js";
 import type { ExecutionResult } from "../../lib/api-client";
+import { parseOutput, type OutputSegment } from "../../lib/output-parser";
+import { RichTextSegment } from "./rich-output/rich-text-segment";
+import { RichHtmlSegment } from "./rich-output/rich-html-segment";
+import { RichSvgSegment } from "./rich-output/rich-svg-segment";
+import { RichImageSegment } from "./rich-output/rich-image-segment";
+import { RichChartSegment } from "./rich-output/rich-chart-segment";
 import "./output-panel.css";
+import "./rich-output/rich-output.css";
 
 interface Props {
   result: ExecutionResult | null;
@@ -9,7 +16,34 @@ interface Props {
   onToggleMaximize: () => void;
 }
 
+function SegmentRenderer(props: { segment: OutputSegment }) {
+  return (
+    <Switch fallback={<RichTextSegment content={props.segment.content} />}>
+      <Match when={props.segment.type === "text"}>
+        <RichTextSegment content={props.segment.content} />
+      </Match>
+      <Match when={props.segment.type === "html"}>
+        <RichHtmlSegment content={props.segment.content} />
+      </Match>
+      <Match when={props.segment.type === "svg"}>
+        <RichSvgSegment content={props.segment.content} />
+      </Match>
+      <Match when={props.segment.type === "image"}>
+        <RichImageSegment content={props.segment.content} />
+      </Match>
+      <Match when={props.segment.type === "chart"}>
+        <RichChartSegment content={props.segment.content} />
+      </Match>
+    </Switch>
+  );
+}
+
 export function OutputPanel(props: Props) {
+  const segments = () => {
+    if (!props.result?.stdout) return [];
+    return parseOutput(props.result.stdout);
+  };
+
   return (
     <div class="output-panel">
       <div class="output-panel-header">
@@ -37,8 +71,12 @@ export function OutputPanel(props: Props) {
           <p class="output-panel-empty">Run your code to see output here.</p>
         </Show>
         <Show when={!props.running && props.result}>
-          <Show when={props.result!.stdout}>
-            <pre class="output-panel-stdout">{props.result!.stdout}</pre>
+          <Show when={segments().length > 0}>
+            <div class="output-panel-segments">
+              <For each={segments()}>
+                {(segment) => <SegmentRenderer segment={segment} />}
+              </For>
+            </div>
           </Show>
           <Show when={props.result!.error}>
             <pre class="output-panel-error">{props.result!.error}</pre>

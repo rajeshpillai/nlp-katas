@@ -192,6 +192,21 @@ for i, doc in enumerate(documents):
         print(f"    {'':>14s} |        |")
         print(f"    {'[zero score]':>14s} | {', '.join(unique_suppressed)}")
 
+    # Rich bar chart for this document's top TF-IDF words
+    doc_words_ranked = sorted(
+        [(w, tfidf[w]) for w in set(doc) if tfidf.get(w, 0) > 0],
+        key=lambda x: -x[1]
+    )
+    top_words = [w for w, _ in doc_words_ranked[:10]]
+    top_scores = [round(s, 4) for _, s in doc_words_ranked[:10]]
+    show_chart({
+        "type": "bar",
+        "title": f"Top TF-IDF Words: Doc {i}",
+        "labels": top_words,
+        "datasets": [{"label": "TF-IDF Score", "data": top_scores, "color": "#3b82f6"}],
+        "options": {"x_label": "Word", "y_label": "TF-IDF Score"}
+    })
+
 
 # --- Compare top words across documents ---
 
@@ -210,6 +225,36 @@ print()
 print("  Notice how the top words immediately reveal each document's topic.")
 print("  Documents 0, 2, 4 share cooking words. Documents 1, 3 share astronomy words.")
 
+# Rich bar chart comparing top word across all documents
+all_top3_labels = []
+all_top3_datasets = []
+doc_colors = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6"]
+for i, doc in enumerate(documents):
+    tf = compute_tf(doc)
+    tfidf_doc = {word: tf.get(word, 0) * idf[word] for word in doc}
+    top3 = sorted(tfidf_doc.items(), key=lambda x: -x[1])[:3]
+    for w, _ in top3:
+        if w not in all_top3_labels:
+            all_top3_labels.append(w)
+
+for i, doc in enumerate(documents):
+    tf = compute_tf(doc)
+    tfidf_doc = {word: tf.get(word, 0) * idf[word] for word in doc}
+    scores = [round(tfidf_doc.get(w, 0), 4) for w in all_top3_labels]
+    all_top3_datasets.append({
+        "label": f"Doc {i}",
+        "data": scores,
+        "color": doc_colors[i % len(doc_colors)]
+    })
+
+show_chart({
+    "type": "bar",
+    "title": "Top 3 Words Per Document (TF-IDF Scores)",
+    "labels": all_top3_labels,
+    "datasets": all_top3_datasets,
+    "options": {"x_label": "Word", "y_label": "TF-IDF Score"}
+})
+
 
 # --- Show the IDF spectrum ---
 
@@ -225,6 +270,17 @@ for word, score in idf_sorted:
     bar = ascii_bar(score, max_idf, width=35)
     freq_label = f"{doc_freq}/{len(documents)} docs"
     print(f"  {word:>14s}  IDF={score:.3f}  ({freq_label})  {bar}")
+
+# Rich bar chart for the IDF spectrum
+idf_words = [w for w, _ in idf_sorted]
+idf_scores = [round(s, 3) for _, s in idf_sorted]
+show_chart({
+    "type": "bar",
+    "title": "IDF Spectrum: From Common to Rare",
+    "labels": idf_words,
+    "datasets": [{"label": "IDF Score", "data": idf_scores, "color": "#10b981"}],
+    "options": {"x_label": "Word", "y_label": "IDF Score"}
+})
 
 
 # --- Show importance distribution within a single document ---
@@ -261,6 +317,18 @@ for word, score in ranked:
 
 print(f"\n  The top few words carry most of the TF-IDF \"mass\".")
 print(f"  Common words contribute nothing. This is by design.")
+
+# Rich bar chart for Doc 0 importance distribution
+dist_words = [w for w, _ in ranked]
+dist_scores = [round(s, 4) for _, s in ranked]
+dist_pcts = [round(s / total_tfidf * 100, 1) if total_tfidf > 0 else 0 for _, s in ranked]
+show_chart({
+    "type": "bar",
+    "title": f"Importance Distribution: Doc {doc_idx} (TF-IDF Scores)",
+    "labels": dist_words,
+    "datasets": [{"label": "TF-IDF Score", "data": dist_scores, "color": "#f59e0b"}],
+    "options": {"x_label": "Word", "y_label": "TF-IDF Score"}
+})
 
 
 # --- Side-by-side comparison of two documents ---
@@ -301,6 +369,36 @@ print()
 print("  Each document has a completely different importance profile.")
 print("  The visualization makes topical differences immediately obvious.")
 print("  TF-IDF creates a unique \"fingerprint\" for each document's content.")
+
+# Rich bar chart: side-by-side comparison of cooking vs astronomy
+cooking_ranked_top = sorted(cooking.items(), key=lambda x: -x[1])[:6]
+astro_ranked_top = sorted(astronomy.items(), key=lambda x: -x[1])[:6]
+all_compare_words = []
+for w, _ in cooking_ranked_top:
+    if w not in all_compare_words:
+        all_compare_words.append(w)
+for w, _ in astro_ranked_top:
+    if w not in all_compare_words:
+        all_compare_words.append(w)
+
+show_chart({
+    "type": "bar",
+    "title": "Side-by-Side: Cooking (Doc 0) vs Astronomy (Doc 1)",
+    "labels": all_compare_words,
+    "datasets": [
+        {
+            "label": "Doc 0 (cooking)",
+            "data": [round(cooking.get(w, 0), 4) for w in all_compare_words],
+            "color": "#3b82f6"
+        },
+        {
+            "label": "Doc 1 (astronomy)",
+            "data": [round(astronomy.get(w, 0), 4) for w in all_compare_words],
+            "color": "#ef4444"
+        }
+    ],
+    "options": {"x_label": "Word", "y_label": "TF-IDF Score"}
+})
 ```
 
 ---

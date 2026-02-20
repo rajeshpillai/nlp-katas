@@ -134,6 +134,19 @@ print("=== Document Vectors as Bar Charts ===\n")
 for label, vector in zip(labels, matrix):
     print_bar_chart(label, vector, vocabulary)
 
+    # Rich bar chart for each document vector
+    show_chart({
+        "type": "bar",
+        "title": f"Document Vector: {label}",
+        "labels": [w for w, c in zip(vocabulary, vector) if c > 0],
+        "datasets": [{
+            "label": "Word Count",
+            "data": [c for c in vector if c > 0],
+            "color": "#3b82f6",
+        }],
+        "options": {"x_label": "Words", "y_label": "Count"},
+    })
+
 
 # --- Sparsity analysis per document ---
 print("=== Sparsity Statistics ===")
@@ -146,6 +159,24 @@ for label, vector in zip(labels, matrix):
     sparsity = (zero / total) * 100
     print(f"  {label:<16} {nonzero:>10} {zero:>10} {total:>10} {sparsity:>9.1f}%")
 print()
+
+# Rich chart: sparsity comparison across documents
+sparsity_values = []
+for vec in matrix:
+    zero_count = sum(1 for v in vec if v == 0)
+    sparsity_values.append(round((zero_count / len(vec)) * 100, 1))
+
+show_chart({
+    "type": "bar",
+    "title": "Sparsity Comparison Across Documents",
+    "labels": labels,
+    "datasets": [{
+        "label": "Sparsity (%)",
+        "data": sparsity_values,
+        "color": "#f59e0b",
+    }],
+    "options": {"x_label": "Document", "y_label": "Sparsity (%)"},
+})
 
 
 # --- Sparse vector display (only non-zero entries) ---
@@ -217,6 +248,29 @@ for i, (label_i, vec_i) in enumerate(zip(labels, matrix)):
 print()
 print("  Higher numbers = more vocabulary overlap = likely more similar.")
 print("  This is a rough proxy — Kata 2.3 formalizes this with cosine similarity.")
+
+# Rich chart: overlap heatmap as grouped bar chart
+# Show each document's overlap with every other document
+overlap_datasets = []
+colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"]
+for i, (label_i, vec_i) in enumerate(zip(labels, matrix)):
+    overlaps = []
+    for j, vec_j in enumerate(matrix):
+        shared = sum(1 for a, b in zip(vec_i, vec_j) if a > 0 and b > 0)
+        overlaps.append(shared)
+    overlap_datasets.append({
+        "label": label_i,
+        "data": overlaps,
+        "color": colors[i % len(colors)],
+    })
+
+show_chart({
+    "type": "bar",
+    "title": "Vocabulary Overlap Between Documents",
+    "labels": labels,
+    "datasets": overlap_datasets,
+    "options": {"x_label": "Document", "y_label": "Shared Non-Zero Dimensions"},
+})
 ```
 
 ---

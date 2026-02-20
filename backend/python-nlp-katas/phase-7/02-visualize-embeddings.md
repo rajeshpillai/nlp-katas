@@ -402,6 +402,68 @@ for w in focus_words:
 print()
 
 # ============================================================
+# MATPLOTLIB SCATTER PLOT
+# ============================================================
+# Rich scatter plot (renders inline when matplotlib is available)
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    cat_colors = {
+        "animals": "#e74c3c",   # red
+        "royalty": "#8e44ad",   # purple
+        "people":  "#2980b9",   # blue
+        "objects": "#27ae60",   # green
+        "places":  "#f39c12",   # orange
+    }
+    cat_markers = {
+        "animals": "o",
+        "royalty": "s",
+        "people":  "^",
+        "objects": "D",
+        "places":  "p",
+    }
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    # Plot each category as a separate series for legend entries
+    for cat_name, cat_word_list in categories.items():
+        present = [w for w in cat_word_list if w in coords_2d]
+        if not present:
+            continue
+        cat_xs = [coords_2d[w][0] for w in present]
+        cat_ys = [coords_2d[w][1] for w in present]
+        ax.scatter(
+            cat_xs, cat_ys,
+            c=cat_colors.get(cat_name, "#888888"),
+            marker=cat_markers.get(cat_name, "o"),
+            s=100, label=cat_name.capitalize(),
+            edgecolors="white", linewidths=0.5, zorder=3,
+        )
+
+    # Annotate each point with its word label
+    for w in focus_words:
+        x, y = coords_2d[w]
+        ax.annotate(
+            w, (x, y),
+            textcoords="offset points", xytext=(6, 6),
+            fontsize=9, fontweight="bold",
+            color="#333333",
+        )
+
+    ax.set_title("Word Embedding Space (2D Projection)", fontsize=14)
+    ax.set_xlabel("Dimension 1 (PC1)")
+    ax.set_ylabel("Dimension 2 (PC2)")
+    ax.legend(loc="best", framealpha=0.9)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()  # Automatically renders as base64 image
+except ImportError:
+    pass  # matplotlib not available
+
+# ============================================================
 # CLUSTER ANALYSIS
 # ============================================================
 

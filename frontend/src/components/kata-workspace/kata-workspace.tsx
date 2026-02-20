@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal, createEffect, Show } from "solid-js";
 import Resizable from "@corvu/resizable";
 import { CodePanel } from "./code-panel";
 import { OutputPanel } from "./output-panel";
@@ -18,10 +18,15 @@ function extractCode(markdown: string): string {
 export type MaximizedPanel = "code" | "output" | null;
 
 export function KataWorkspace(props: Props) {
-  const starterCode = () => extractCode(props.markdown);
-  const [code, setCode] = createSignal(starterCode());
+  const [code, setCode] = createSignal(extractCode(props.markdown));
   const [output, setOutput] = createSignal<ExecutionResult | null>(null);
   const [running, setRunning] = createSignal(false);
+
+  // Reset code and output when navigating to a different kata
+  createEffect(() => {
+    setCode(extractCode(props.markdown));
+    setOutput(null);
+  });
   const [maximized, setMaximized] = createSignal<MaximizedPanel>(null);
   const [sizes, setSizes] = createSignal([0.5, 0.5]);
 
@@ -48,7 +53,7 @@ export function KataWorkspace(props: Props) {
   };
 
   const handleReset = () => {
-    setCode(starterCode());
+    setCode(extractCode(props.markdown));
     setOutput(null);
   };
 

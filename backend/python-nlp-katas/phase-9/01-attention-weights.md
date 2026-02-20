@@ -301,6 +301,16 @@ for i, word in enumerate(words):
 
 print()
 
+# Rich heatmap visualization of attention weights
+show_chart({
+    "type": "heatmap",
+    "title": "Self-Attention Weights",
+    "x_labels": words,
+    "y_labels": words,
+    "data": attention_weights,
+    "color_scale": "blue"
+})
+
 # ============================================================
 # SHOW TOP ATTENDED TOKENS FOR EACH WORD
 # ============================================================
