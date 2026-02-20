@@ -1,3 +1,5 @@
 CLAUDE.md
-scripts
 .claude
+scripts
+.ossignore
+frontend/bun.lock

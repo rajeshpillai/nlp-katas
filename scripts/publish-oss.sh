@@ -2,12 +2,12 @@
 set -euo pipefail
 
 #
-# publish-oss.sh — Publish a cleaned client-only copy to the OSS repo.
+# publish-oss.sh — Publish a cleaned copy to the OSS repo.
 #
 # Usage:
 #   ./scripts/publish-oss.sh                          # dry-run (default)
 #   ./scripts/publish-oss.sh --push                   # actually push to OSS remote
-#   OSS_REMOTE=git@github.com:org/yappy.git ./scripts/publish-oss.sh --push
+#   OSS_REMOTE=https://github.com/user/nlp-katas.git ./scripts/publish-oss.sh --push
 #
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # --- Configuration -----------------------------------------------------------
 
-OSS_REMOTE="${OSS_REMOTE:-}"                      # set via env or edit here
+OSS_REMOTE="${OSS_REMOTE:-https://github.com/algorisys-oss/nlp-katas.git}"
 OSS_BRANCH="${OSS_BRANCH:-main}"                  # branch to push to on OSS remote
 OSS_MESSAGE="${OSS_MESSAGE:-}"                    # custom commit message (optional)
 OSSIGNORE_FILE="$REPO_ROOT/.ossignore"            # list of paths to exclude
@@ -34,7 +34,7 @@ error() { printf "\033[1;31m=> %s\033[0m\n" "$*"; exit 1; }
 # --- Validate -----------------------------------------------------------------
 
 if [[ "$DRY_RUN" == false && -z "$OSS_REMOTE" ]]; then
-    error "OSS_REMOTE is not set. Export it or pass it inline:\n  OSS_REMOTE=git@github.com:org/yappy.git $0 --push"
+    error "OSS_REMOTE is not set. Export it or pass it inline:\n  OSS_REMOTE=https://github.com/user/nlp-katas.git $0 --push"
 fi
 
 if [[ ! -f "$OSSIGNORE_FILE" ]]; then
@@ -65,60 +65,10 @@ while IFS= read -r line; do
     fi
 done < "$OSSIGNORE_FILE"
 
-# --- Patch package.json -------------------------------------------------------
-
-info "Patching package.json (removing server deps & scripts)"
-
-node -e "
-const fs = require('fs');
-const pkg = JSON.parse(fs.readFileSync('$WORK_DIR/package.json', 'utf8'));
-
-// Remove server-only dependencies
-const serverDeps = ['express', 'cors'];
-const serverDevDeps = ['@types/express', '@types/cors', '@types/node', 'tsx', 'concurrently'];
-
-for (const d of serverDeps) delete pkg.dependencies?.[d];
-for (const d of serverDevDeps) delete pkg.devDependencies?.[d];
-
-// Remove private flag so it can be published/forked
-delete pkg.private;
-
-// Rewrite scripts — keep only client-relevant ones
-pkg.scripts = {
-    dev: 'vite',
-    build: 'tsc -b && vite build',
-    preview: 'vite preview'
-};
-
-fs.writeFileSync('$WORK_DIR/package.json', JSON.stringify(pkg, null, 2) + '\n');
-"
-
-# --- Patch vite.config.ts (remove server proxy) -------------------------------
-
-info "Patching vite.config.ts (removing server proxy)"
-
-node -e "
-const fs = require('fs');
-let content = fs.readFileSync('$WORK_DIR/vite.config.ts', 'utf8');
-
-// Remove the server block (proxy config)
-content = content.replace(/,\s*server:\s*\{[^}]*\{[^}]*\}[^}]*\}/s, '');
-
-fs.writeFileSync('$WORK_DIR/vite.config.ts', content);
-"
-
 # --- Summary ------------------------------------------------------------------
 
 info "OSS tree contents:"
-(cd "$WORK_DIR" && find . -maxdepth 2 -not -path '*/node_modules/*' -not -path './.git/*' | sort)
-
-echo ""
-info "package.json scripts:"
-node -e "const p=JSON.parse(require('fs').readFileSync('$WORK_DIR/package.json','utf8')); console.log(JSON.stringify(p.scripts,null,2));"
-
-echo ""
-info "package.json dependencies:"
-node -e "const p=JSON.parse(require('fs').readFileSync('$WORK_DIR/package.json','utf8')); console.log('dependencies:', JSON.stringify(Object.keys(p.dependencies||{}),null,2)); console.log('devDependencies:', JSON.stringify(Object.keys(p.devDependencies||{}),null,2));"
+(cd "$WORK_DIR" && find . -maxdepth 3 -not -path '*/node_modules/*' -not -path './.git/*' -not -path '*/venv/*' -not -path '*/__pycache__/*' | sort)
 
 # --- Push to OSS remote -------------------------------------------------------
 
@@ -126,7 +76,7 @@ if [[ "$DRY_RUN" == true ]]; then
     echo ""
     warn "DRY RUN — no changes pushed."
     warn "Review the tree above. To push for real:"
-    warn "  OSS_REMOTE=git@github.com:org/yappy.git $0 --push"
+    warn "  OSS_REMOTE=https://github.com/user/nlp-katas.git $0 --push"
     exit 0
 fi
 
