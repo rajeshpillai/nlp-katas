@@ -1,9 +1,9 @@
 # Python NLP Katas
 
 ## Phase 0 — Language & Text (Foundations)
-- [ ] Explore ambiguity in sentences (same word, different meanings)
-- [ ] Identify noise in real-world text samples
-- [ ] Compare structured vs unstructured text
+- [x] Explore ambiguity in sentences (same word, different meanings)
+- [x] Identify noise in real-world text samples
+- [x] Compare structured vs unstructured text
 
 ## Phase 1 — Text Preprocessing
 - [ ] Apply preprocessing pipeline to raw text
