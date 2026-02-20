@@ -6,9 +6,9 @@
 - [x] Compare structured vs unstructured text
 
 ## Phase 1 — Text Preprocessing
-- [ ] Apply preprocessing pipeline to raw text
-- [ ] Compare stemming vs lemmatization output
-- [ ] Measure how stopword removal changes document similarity
+- [x] Apply preprocessing pipeline to raw text
+- [x] Compare stemming vs lemmatization output
+- [x] Measure how stopword removal changes document similarity
 
 ## Phase 2 — Bag of Words (BoW)
 - [ ] Build BoW from scratch

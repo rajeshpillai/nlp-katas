@@ -8,15 +8,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "solid-js": "^1.9.0",
+    "@codemirror/commands": "^6.10.2",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/language": "^6.12.1",
+    "@codemirror/state": "^6.5.4",
+    "@codemirror/view": "^6.39.15",
+    "@corvu/resizable": "^0.2.0",
+    "@lezer/highlight": "^1.2.3",
     "@solidjs/router": "^0.15.0",
-    "@corvu/resizable": "^0.2.0"
+    "solid-codemirror": "^2.3.1",
+    "solid-js": "^1.9.0"
   },
   "devDependencies": {
-    "vite": "^6.0.0",
-    "vite-plugin-solid": "^2.10.0",
     "@tailwindcss/vite": "^4.0.0",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.10.0"
   }
 }

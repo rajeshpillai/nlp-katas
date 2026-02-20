@@ -57,14 +57,10 @@
 
 .code-panel-editor {
   flex: 1;
-  padding: 1rem;
-  background: var(--color-code-bg);
-  color: var(--color-code-text);
-  border: none;
-  resize: none;
-  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  tab-size: 4;
-  outline: none;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.code-panel-editor .cm-editor {
+  height: 100%;
 }

@@ -21,3 +21,24 @@
 .kata-workspace-handle[data-active] {
   background: var(--color-accent);
 }
+
+.panel-maximize-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.panel-maximize-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}

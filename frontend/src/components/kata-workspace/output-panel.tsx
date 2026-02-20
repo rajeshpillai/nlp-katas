@@ -5,18 +5,29 @@ import "./output-panel.css";
 interface Props {
   result: ExecutionResult | null;
   running: boolean;
+  maximized: boolean;
+  onToggleMaximize: () => void;
 }
 
 export function OutputPanel(props: Props) {
   return (
     <div class="output-panel">
       <div class="output-panel-header">
-        Output
-        <Show when={props.result}>
-          <span class="output-panel-time">
-            {props.result!.execution_time_ms.toFixed(1)}ms
-          </span>
-        </Show>
+        <span>Output</span>
+        <div class="output-panel-header-actions">
+          <Show when={props.result}>
+            <span class="output-panel-time">
+              {props.result!.execution_time_ms.toFixed(1)}ms
+            </span>
+          </Show>
+          <button
+            class="panel-maximize-btn"
+            onClick={props.onToggleMaximize}
+            title={props.maximized ? "Restore" : "Maximize"}
+          >
+            {props.maximized ? "\u29C9" : "\u2922"}
+          </button>
+        </div>
       </div>
       <div class="output-panel-body">
         <Show when={props.running}>

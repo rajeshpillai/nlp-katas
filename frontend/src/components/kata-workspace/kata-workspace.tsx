@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import Resizable from "@corvu/resizable";
 import { CodePanel } from "./code-panel";
 import { OutputPanel } from "./output-panel";
@@ -15,11 +15,25 @@ function extractCode(markdown: string): string {
   return match ? match[1].trim() : "# No code found in this kata";
 }
 
+export type MaximizedPanel = "code" | "output" | null;
+
 export function KataWorkspace(props: Props) {
   const starterCode = () => extractCode(props.markdown);
   const [code, setCode] = createSignal(starterCode());
   const [output, setOutput] = createSignal<ExecutionResult | null>(null);
   const [running, setRunning] = createSignal(false);
+  const [maximized, setMaximized] = createSignal<MaximizedPanel>(null);
+  const [sizes, setSizes] = createSignal([0.5, 0.5]);
+
+  const toggleMaximize = (panel: "code" | "output") => {
+    if (maximized() === panel) {
+      setMaximized(null);
+      setSizes([0.5, 0.5]);
+    } else {
+      setMaximized(panel);
+      setSizes(panel === "code" ? [1, 0] : [0, 1]);
+    }
+  };
 
   const handleRun = async () => {
     setRunning(true);
@@ -39,19 +53,42 @@ export function KataWorkspace(props: Props) {
   };
 
   return (
-    <Resizable class="kata-workspace">
-      <Resizable.Panel class="kata-workspace-panel" initialSize={0.5} minSize={0.2}>
-        <CodePanel
-          code={code()}
-          onCodeChange={setCode}
-          onRun={handleRun}
-          onReset={handleReset}
-          running={running()}
-        />
+    <Resizable
+      class="kata-workspace"
+      sizes={sizes()}
+      onSizesChange={setSizes}
+    >
+      <Resizable.Panel
+        class="kata-workspace-panel"
+        minSize={maximized() === "output" ? 0 : 0.2}
+      >
+        <Show when={maximized() !== "output"}>
+          <CodePanel
+            code={code()}
+            onCodeChange={setCode}
+            onRun={handleRun}
+            onReset={handleReset}
+            running={running()}
+            maximized={maximized() === "code"}
+            onToggleMaximize={() => toggleMaximize("code")}
+          />
+        </Show>
       </Resizable.Panel>
-      <Resizable.Handle class="kata-workspace-handle" />
-      <Resizable.Panel class="kata-workspace-panel" initialSize={0.5} minSize={0.2}>
-        <OutputPanel result={output()} running={running()} />
+      <Show when={!maximized()}>
+        <Resizable.Handle class="kata-workspace-handle" />
+      </Show>
+      <Resizable.Panel
+        class="kata-workspace-panel"
+        minSize={maximized() === "code" ? 0 : 0.2}
+      >
+        <Show when={maximized() !== "code"}>
+          <OutputPanel
+            result={output()}
+            running={running()}
+            maximized={maximized() === "output"}
+            onToggleMaximize={() => toggleMaximize("output")}
+          />
+        </Show>
       </Resizable.Panel>
     </Resizable>
   );

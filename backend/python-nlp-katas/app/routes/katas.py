@@ -16,6 +16,10 @@ PYTHON_NLP_KATAS: list[dict] = [
     {"id": "explore-ambiguity", "title": "Explore Ambiguity in Sentences", "phase": 0, "sequence": 1, "track_id": "python-nlp"},
     {"id": "identify-noise", "title": "Identify Noise in Real-World Text", "phase": 0, "sequence": 2, "track_id": "python-nlp"},
     {"id": "structured-vs-unstructured", "title": "Compare Structured vs Unstructured Text", "phase": 0, "sequence": 3, "track_id": "python-nlp"},
+    # Phase 1 — Text Preprocessing
+    {"id": "preprocessing-pipeline", "title": "Apply a Preprocessing Pipeline to Raw Text", "phase": 1, "sequence": 1, "track_id": "python-nlp"},
+    {"id": "stemming-vs-lemmatization", "title": "Compare Stemming vs Lemmatization Output", "phase": 1, "sequence": 2, "track_id": "python-nlp"},
+    {"id": "stopword-removal-similarity", "title": "Measure How Stopword Removal Changes Document Similarity", "phase": 1, "sequence": 3, "track_id": "python-nlp"},
 ]
 
 PHASE_NAMES = {

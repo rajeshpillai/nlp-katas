@@ -15,6 +15,12 @@
   font-weight: 500;
 }
 
+.output-panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .output-panel-time {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
