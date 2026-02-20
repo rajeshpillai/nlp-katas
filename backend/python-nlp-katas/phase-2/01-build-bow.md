@@ -132,6 +132,15 @@ for i, row in enumerate(matrix):
     print(f"  Doc {i + 1}: {row_str}")
 print()
 
+show_chart({
+    "type": "heatmap",
+    "title": "Document-Term Matrix",
+    "x_labels": vocabulary,
+    "y_labels": [f"Doc {i + 1}" for i in range(len(corpus))],
+    "data": matrix,
+    "color_scale": "blue"
+})
+
 # Step 4: Analyze sparsity
 print("=== Sparsity Analysis ===")
 total_cells = 0

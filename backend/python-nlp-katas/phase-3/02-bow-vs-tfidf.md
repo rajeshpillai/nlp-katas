@@ -206,6 +206,25 @@ for i, j in pairs:
 
     print(f"  Doc {i} vs Doc {j}  {bow_sim:12.4f} {tfidf_sim:14.4f}  {note}")
 
+# Visualize BoW vs TF-IDF similarity as grouped bar chart
+pair_labels = [f"Doc {i} vs Doc {j}" for i, j in pairs]
+bow_scores = []
+tfidf_scores_list = []
+for i, j in pairs:
+    bow_scores.append(round(cosine_similarity(bow_vectors[i], bow_vectors[j]), 4))
+    tfidf_scores_list.append(round(cosine_similarity(tfidf_vectors[i], tfidf_vectors[j]), 4))
+
+show_chart({
+    "type": "bar",
+    "title": "BoW vs TF-IDF Cosine Similarity",
+    "labels": pair_labels,
+    "datasets": [
+        {"label": "BoW Cosine", "data": bow_scores, "color": "#f59e0b"},
+        {"label": "TF-IDF Cosine", "data": tfidf_scores_list, "color": "#3b82f6"},
+    ],
+    "options": {"x_label": "Document Pair", "y_label": "Cosine Similarity"}
+})
+
 # --- Show why BoW is misleading ---
 
 print("\n=== WHY BOW IS MISLEADING ===\n")
@@ -272,6 +291,18 @@ else:
 print()
 print("  TF-IDF produces more topically meaningful similarity scores")
 print("  by suppressing words that carry no discriminative information.")
+
+# Visualize the verdict: Doc 0 similarity to Doc 1 vs Doc 2
+show_chart({
+    "type": "bar",
+    "title": "Doc 0 (cat) — Similarity to Doc 1 (dog) vs Doc 2 (cat)",
+    "labels": ["Doc 0 vs Doc 1 (dog)", "Doc 0 vs Doc 2 (cat)"],
+    "datasets": [
+        {"label": "BoW Cosine", "data": [round(bow_01, 4), round(bow_02, 4)], "color": "#f59e0b"},
+        {"label": "TF-IDF Cosine", "data": [round(tfidf_01, 4), round(tfidf_02, 4)], "color": "#3b82f6"},
+    ],
+    "options": {"x_label": "Document Pair", "y_label": "Cosine Similarity"}
+})
 ```
 
 ---

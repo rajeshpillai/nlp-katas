@@ -129,6 +129,26 @@ for sample in samples:
     result = preprocess(sample, pipeline)
 
 
+# --- Visualize token counts through the pipeline for one sample ---
+demo_text = samples[0]
+step_labels = ["Raw"]
+step_counts = [len(demo_text.split())]
+
+current = demo_text
+for step in pipeline:
+    current = step(current)
+    step_labels.append(step.__name__.replace("_", " ").title())
+    step_counts.append(len(current.split()))
+
+show_chart({
+    "type": "bar",
+    "title": "Token Count Through Preprocessing Pipeline",
+    "labels": step_labels,
+    "datasets": [{"label": "Token count", "data": step_counts, "color": "#3b82f6"}],
+    "options": {"x_label": "Pipeline Step", "y_label": "Token Count"}
+})
+
+
 # Step 4: Compare different pipeline orders
 
 print("\n=== Order Matters ===\n")

@@ -384,6 +384,9 @@ approaches = [
     ("Pretrained features", pretrained_vectors),
 ]
 
+approach_names = []
+approach_accuracies = []
+
 for approach_name, vectors in approaches:
     correct = 0
     print(f"--- {approach_name} ---")
@@ -397,7 +400,38 @@ for approach_name, vectors in approaches:
               f"{text[:45]}...")
 
     accuracy = correct / len(test_sentences) * 100
+    approach_names.append(approach_name)
+    approach_accuracies.append(round(accuracy, 1))
     print(f"  Accuracy: {correct}/{len(test_sentences)} = {accuracy:.0f}%\n")
+
+# --- Visualization: Random vs Pretrained Accuracy ---
+show_chart({
+    "type": "bar",
+    "title": "Sentiment Classification Accuracy: Random vs Pretrained",
+    "labels": approach_names,
+    "datasets": [{"label": "Accuracy (%)", "data": approach_accuracies, "color": "#3b82f6"}],
+    "options": {"x_label": "Approach", "y_label": "Accuracy (%)"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    colors = ["#ef4444", "#10b981"]
+    ax.bar(approach_names, approach_accuracies, color=colors[:len(approach_names)])
+    ax.set_ylabel("Accuracy (%)")
+    ax.set_title("Sentiment Classification: Random vs Pretrained")
+    ax.set_ylim(0, 110)
+    for i, v in enumerate(approach_accuracies):
+        ax.text(i, v + 2, f"{v:.0f}%", ha="center", fontsize=12, fontweight="bold")
+    plt.tight_layout()
+    plt.savefig("random_vs_pretrained_accuracy.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: random_vs_pretrained_accuracy.png]")
+except ImportError:
+    pass
 
 
 # ============================================================
@@ -495,6 +529,57 @@ print("  Within-group similarity > between-group similarity")
 print("  --> Pretraining learned that positive words behave alike")
 print("      and negative words behave alike, purely from")
 print("      co-occurrence patterns. No labels were used.")
+
+# --- Visualization: Within-group vs Between-group Similarity ---
+# Collect the group averages for visualization
+sim_group_labels = []
+sim_group_values = []
+sim_group_colors = []
+for group_name, words in word_groups.items():
+    present = [w for w in words if w in pretrained_vectors]
+    if len(present) < 2:
+        continue
+    sims_inner = []
+    for i in range(len(present)):
+        for j in range(i + 1, len(present)):
+            s = cosine_sim(pretrained_vectors[present[i]],
+                           pretrained_vectors[present[j]])
+            sims_inner.append(s)
+    avg_inner = sum(sims_inner) / len(sims_inner) if sims_inner else 0
+    sim_group_labels.append(f"{group_name} (within)")
+    sim_group_values.append(round(avg_inner, 4))
+    sim_group_colors.append("#10b981" if group_name == "positive" else "#ef4444")
+
+sim_group_labels.append("pos vs neg (between)")
+sim_group_values.append(round(avg_cross, 4))
+sim_group_colors.append("#f59e0b")
+
+show_chart({
+    "type": "bar",
+    "title": "Pretrained Representation: Within-Group vs Between-Group Similarity",
+    "labels": sim_group_labels,
+    "datasets": [{"label": "Avg Cosine Similarity", "data": sim_group_values, "color": "#3b82f6"}],
+    "options": {"x_label": "Group Comparison", "y_label": "Average Cosine Similarity"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.bar(sim_group_labels, sim_group_values, color=sim_group_colors)
+    ax.set_ylabel("Average Cosine Similarity")
+    ax.set_title("Within-Group vs Between-Group Similarity")
+    for i, v in enumerate(sim_group_values):
+        ax.text(i, v + 0.01, f"{v:.3f}", ha="center", fontsize=10)
+    plt.tight_layout()
+    plt.savefig("within_vs_between_similarity.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: within_vs_between_similarity.png]")
+except ImportError:
+    pass
+
 print()
 print("Modern NLP stands on decades of classical foundations.")
 print("Pretraining vs fine-tuning is an engineering strategy,")

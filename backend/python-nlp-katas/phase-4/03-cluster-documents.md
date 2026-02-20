@@ -310,9 +310,14 @@ print("=" * 60)
 print(f"Best average within-cluster similarity: {score:.4f}")
 print()
 
+cluster_sizes = []
+cluster_top_terms_data = []
+
 for c in range(K):
     members = [i for i in range(len(names)) if assignment[i] == c]
     top_terms = get_top_terms(members, doc_tokens_list, vocab, vectors)
+    cluster_sizes.append(len(members))
+    cluster_top_terms_data.append(top_terms)
 
     term_str = ", ".join(f"{w} ({s:.3f})" for w, s in top_terms)
     print(f"--- Cluster {c + 1} ({len(members)} docs) ---")
@@ -320,6 +325,36 @@ for c in range(K):
     for i in members:
         print(f"    {names[i]}: {texts[i][:65]}...")
     print()
+
+# Visualize cluster sizes
+cluster_colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]
+show_chart({
+    "type": "bar",
+    "title": "Cluster Sizes (Number of Documents per Cluster)",
+    "labels": [f"Cluster {c + 1}" for c in range(K)],
+    "datasets": [{
+        "label": "Documents",
+        "data": cluster_sizes,
+        "color": "#3b82f6"
+    }],
+    "options": {"x_label": "Cluster", "y_label": "Number of Documents"}
+})
+
+# Visualize top terms per cluster
+for c in range(K):
+    terms = cluster_top_terms_data[c]
+    if terms:
+        show_chart({
+            "type": "bar",
+            "title": f"Cluster {c + 1} — Top TF-IDF Terms",
+            "labels": [w for w, s in terms],
+            "datasets": [{
+                "label": "TF-IDF Weight",
+                "data": [round(s, 4) for w, s in terms],
+                "color": cluster_colors[c % len(cluster_colors)]
+            }],
+            "options": {"x_label": "Term", "y_label": "Centroid Weight"}
+        })
 
 # --- Show pairwise similarity matrix for insight ---
 print("=" * 60)
@@ -349,6 +384,31 @@ print(f"  Average between-cluster similarity:    {avg_between:.4f}")
 print()
 print("Good clustering: within-cluster similarity >> between-cluster similarity")
 print()
+
+# Visualize within-cluster vs between-cluster similarity
+within_avgs = []
+for c in range(K):
+    members = [i for i in range(len(names)) if assignment[i] == c]
+    if len(members) < 2:
+        within_avgs.append(0.0)
+        continue
+    sims = []
+    for a in range(len(members)):
+        for b in range(a + 1, len(members)):
+            sims.append(cosine_similarity(vectors[members[a]], vectors[members[b]]))
+    within_avgs.append(round(sum(sims) / len(sims), 4) if sims else 0.0)
+
+show_chart({
+    "type": "bar",
+    "title": "Within-Cluster vs Between-Cluster Similarity",
+    "labels": [f"Cluster {c + 1}" for c in range(K)] + ["Between Clusters"],
+    "datasets": [{
+        "label": "Avg Cosine Similarity",
+        "data": within_avgs + [round(avg_between, 4)],
+        "color": "#8b5cf6"
+    }],
+    "options": {"x_label": "Group", "y_label": "Average Cosine Similarity"}
+})
 
 # --- Show what happens with different K values ---
 print("=" * 60)

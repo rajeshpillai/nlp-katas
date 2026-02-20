@@ -202,6 +202,30 @@ for i in range(len(names)):
 
 print()
 
+# Build cosine similarity matrix for heatmap
+doc_names = list(documents.keys())
+n_docs = len(doc_names)
+cos_matrix = []
+for i in range(n_docs):
+    row = []
+    for j in range(n_docs):
+        if i == j:
+            row.append(1.0)
+        else:
+            t1, t2 = tokenized[doc_names[i]], tokenized[doc_names[j]]
+            _, v1, v2 = build_vectors(t1, t2)
+            row.append(round(cosine_similarity(v1, v2), 3))
+    cos_matrix.append(row)
+
+show_chart({
+    "type": "heatmap",
+    "title": "Cosine Similarity Matrix (All Document Pairs)",
+    "x_labels": doc_names,
+    "y_labels": doc_names,
+    "data": cos_matrix,
+    "color_scale": "blue"
+})
+
 # --- Deep dive: Doc A vs Doc B ---
 print("=" * 60)
 print("DEEP DIVE: Doc A vs Doc B")

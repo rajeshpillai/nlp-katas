@@ -217,6 +217,23 @@ for i, doc in enumerate(documents):
               f" (IDF=0, appear in all docs)")
     print()
 
+    # Visualize top TF-IDF words for this document
+    nonzero_sorted = sorted(
+        [(w, s) for w, s in tfidf.items() if s > 0],
+        key=lambda x: -x[1]
+    )
+    if nonzero_sorted:
+        chart_labels = [w for w, s in nonzero_sorted]
+        chart_data = [round(s, 4) for w, s in nonzero_sorted]
+        colors = ["#3b82f6", "#10b981", "#f59e0b"]
+        show_chart({
+            "type": "bar",
+            "title": f"TF-IDF Scores — Doc {i}: \"{corpus[i][:30]}...\"",
+            "labels": chart_labels,
+            "datasets": [{"label": "TF-IDF", "data": chart_data, "color": colors[i % 3]}],
+            "options": {"x_label": "Word", "y_label": "TF-IDF Score"}
+        })
+
 # Step 6: Show the full document-term matrix
 print("=== DOCUMENT-TERM MATRIX (TF-IDF) ===\n")
 
@@ -234,6 +251,20 @@ print("\n=== KEY OBSERVATIONS ===\n")
 print('  "the" has TF-IDF = 0 everywhere — it appears in ALL documents.')
 print('  "mat", "rug", "chased" have the highest scores — they are UNIQUE.')
 print('  TF-IDF automatically identifies what makes each document distinctive.')
+
+# Visualize IDF values across the vocabulary
+idf_sorted_pairs = sorted(idf_scores.items(), key=lambda x: -x[1])
+show_chart({
+    "type": "bar",
+    "title": "IDF Values Across Vocabulary",
+    "labels": [w for w, s in idf_sorted_pairs],
+    "datasets": [{
+        "label": "IDF",
+        "data": [round(s, 4) for w, s in idf_sorted_pairs],
+        "color": "#8b5cf6"
+    }],
+    "options": {"x_label": "Word", "y_label": "IDF Score"}
+})
 ```
 
 ---

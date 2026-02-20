@@ -298,6 +298,60 @@ for i, word in enumerate(words):
     row_str = "".join(f"{dec_mask[i][j]:>7d}" for j in range(seq_len))
     print(f"  {word:>6s}:  {row_str}")
 
+# --- Visualization: Encoder vs Decoder Attention Masks ---
+show_chart({
+    "type": "heatmap",
+    "title": "Encoder Mask (Bidirectional — Full Visibility)",
+    "x_labels": words,
+    "y_labels": words,
+    "data": enc_mask,
+    "color_scale": "blue"
+})
+
+show_chart({
+    "type": "heatmap",
+    "title": "Decoder Mask (Causal — Left-to-Right Only)",
+    "x_labels": words,
+    "y_labels": words,
+    "data": dec_mask,
+    "color_scale": "blue"
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    im1 = ax1.imshow(enc_mask, cmap="Blues", vmin=0, vmax=1)
+    ax1.set_xticks(range(seq_len))
+    ax1.set_xticklabels(words)
+    ax1.set_yticks(range(seq_len))
+    ax1.set_yticklabels(words)
+    ax1.set_title("Encoder Mask (Bidirectional)")
+    for i in range(seq_len):
+        for j in range(seq_len):
+            ax1.text(j, i, str(enc_mask[i][j]), ha="center", va="center", fontsize=12)
+
+    im2 = ax2.imshow(dec_mask, cmap="Blues", vmin=0, vmax=1)
+    ax2.set_xticks(range(seq_len))
+    ax2.set_xticklabels(words)
+    ax2.set_yticks(range(seq_len))
+    ax2.set_yticklabels(words)
+    ax2.set_title("Decoder Mask (Causal)")
+    for i in range(seq_len):
+        for j in range(seq_len):
+            ax2.text(j, i, str(dec_mask[i][j]), ha="center", va="center", fontsize=12)
+
+    plt.suptitle("Encoder vs Decoder Attention Masks")
+    plt.tight_layout()
+    plt.savefig("encoder_vs_decoder_masks.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: encoder_vs_decoder_masks.png]")
+except ImportError:
+    pass
+
 # ============================================================
 # RUN BOTH ATTENTION PATTERNS
 # ============================================================
@@ -322,6 +376,18 @@ for i, word in enumerate(words):
     vec_str = " ".join(format_float(v) for v in enc_output[i])
     print(f"  {word:>6s}: [{vec_str}]")
 
+# --- Visualization: Encoder Attention Weights ---
+enc_weights_data = [[round(enc_weights[i][j], 3) for j in range(seq_len)]
+                     for i in range(seq_len)]
+show_chart({
+    "type": "heatmap",
+    "title": "Encoder Attention Weights (Bidirectional)",
+    "x_labels": words,
+    "y_labels": words,
+    "data": enc_weights_data,
+    "color_scale": "blue"
+})
+
 
 print("\n" + "=" * 60)
 print("DECODER ATTENTION (Causal)")
@@ -344,6 +410,55 @@ print("\n--- Decoder Output ---")
 for i, word in enumerate(words):
     vec_str = " ".join(format_float(v) for v in dec_output[i])
     print(f"  {word:>6s}: [{vec_str}]")
+
+# --- Visualization: Decoder Attention Weights ---
+dec_weights_data = [[round(dec_weights[i][j], 3) for j in range(seq_len)]
+                     for i in range(seq_len)]
+show_chart({
+    "type": "heatmap",
+    "title": "Decoder Attention Weights (Causal Masking)",
+    "x_labels": words,
+    "y_labels": words,
+    "data": dec_weights_data,
+    "color_scale": "blue"
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    im1 = ax1.imshow(enc_weights_data, cmap="Blues", vmin=0, vmax=1)
+    ax1.set_xticks(range(seq_len))
+    ax1.set_xticklabels(words)
+    ax1.set_yticks(range(seq_len))
+    ax1.set_yticklabels(words)
+    ax1.set_title("Encoder Attention Weights")
+    for i in range(seq_len):
+        for j in range(seq_len):
+            ax1.text(j, i, f"{enc_weights_data[i][j]:.2f}",
+                    ha="center", va="center", fontsize=9)
+
+    im2 = ax2.imshow(dec_weights_data, cmap="Blues", vmin=0, vmax=1)
+    ax2.set_xticks(range(seq_len))
+    ax2.set_xticklabels(words)
+    ax2.set_yticks(range(seq_len))
+    ax2.set_yticklabels(words)
+    ax2.set_title("Decoder Attention Weights")
+    for i in range(seq_len):
+        for j in range(seq_len):
+            ax2.text(j, i, f"{dec_weights_data[i][j]:.2f}",
+                    ha="center", va="center", fontsize=9)
+
+    plt.suptitle("Encoder vs Decoder Attention Weights")
+    plt.tight_layout()
+    plt.savefig("encoder_vs_decoder_weights.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: encoder_vs_decoder_weights.png]")
+except ImportError:
+    pass
 
 # ============================================================
 # COMPARE OUTPUTS: HOW MASKING CHANGES REPRESENTATIONS

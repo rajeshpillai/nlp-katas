@@ -175,6 +175,8 @@ pairs = [
      "The mouse chased the cat"),
 ]
 
+pair_labels = []
+bow_sims = []
 for i, (sent_a, sent_b) in enumerate(pairs):
     tokens_a = tokenize(sent_a)
     tokens_b = tokenize(sent_b)
@@ -186,6 +188,9 @@ for i, (sent_a, sent_b) in enumerate(pairs):
     vec_a = bow_vector(tokens_a, vocab)
     vec_b = bow_vector(tokens_b, vocab)
     sim = cosine_similarity(vec_a, vec_b)
+
+    pair_labels.append(f"Pair {i + 1}")
+    bow_sims.append(round(sim, 4))
 
     print(f"\nPair {i + 1}:")
     print(f"  A: \"{sent_a}\"")
@@ -210,6 +215,8 @@ sent_b = "The man bit the dog"
 tokens_a = tokenize(sent_a)
 tokens_b = tokenize(sent_b)
 
+ngram_labels = []
+ngram_sims = []
 for n in [1, 2, 3]:
     label = {1: "Unigrams (BoW)", 2: "Bigrams", 3: "Trigrams"}[n]
     ngrams_a = get_ngrams(tokens_a, n)
@@ -219,6 +226,9 @@ for n in [1, 2, 3]:
     vec_a = ngram_vector(ngrams_a, ng_vocab)
     vec_b = ngram_vector(ngrams_b, ng_vocab)
     sim = cosine_similarity(vec_a, vec_b)
+
+    ngram_labels.append(label)
+    ngram_sims.append(round(sim, 4))
 
     print(f"\n  {label}:")
     print(f"    A: {ngrams_a}")
@@ -233,6 +243,50 @@ for n in [1, 2, 3]:
         print(f"    --> Different! {label} capture some word order.")
 
 print()
+
+# --- Visualization: BoW vs N-gram Similarity ---
+show_chart({
+    "type": "bar",
+    "title": "BoW vs N-gram Similarity: 'The dog bit the man' vs 'The man bit the dog'",
+    "labels": ngram_labels,
+    "datasets": [{"label": "Cosine Similarity", "data": ngram_sims, "color": "#3b82f6"}],
+    "options": {"x_label": "Representation", "y_label": "Cosine Similarity"}
+})
+
+# --- Visualization: All Pairs BoW Similarity (always ~1.0) ---
+show_chart({
+    "type": "bar",
+    "title": "BoW Similarity Across Word-Order Pairs (All ~1.0)",
+    "labels": pair_labels,
+    "datasets": [{"label": "BoW Cosine Similarity", "data": bow_sims, "color": "#ef4444"}],
+    "options": {"x_label": "Sentence Pair", "y_label": "Cosine Similarity"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    ax1.bar(ngram_labels, ngram_sims, color=["#ef4444", "#f59e0b", "#10b981"])
+    ax1.set_ylabel("Cosine Similarity")
+    ax1.set_title("BoW vs N-gram Similarity")
+    ax1.set_ylim(0, 1.15)
+    for i, v in enumerate(ngram_sims):
+        ax1.text(i, v + 0.02, f"{v:.2f}", ha="center", fontsize=10)
+
+    ax2.bar(pair_labels, bow_sims, color="#ef4444")
+    ax2.set_ylabel("Cosine Similarity")
+    ax2.set_title("BoW Similarity Across Pairs (Always ~1.0)")
+    ax2.set_ylim(0, 1.15)
+
+    plt.tight_layout()
+    plt.savefig("bow_vs_ngram.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: bow_vs_ngram.png]")
+except ImportError:
+    pass
 
 # ============================================================
 print("=" * 65)

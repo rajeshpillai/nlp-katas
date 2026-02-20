@@ -362,6 +362,24 @@ print(f"  {'Micro':>10} {total_tp:>4} {total_fp:>4} {total_fn:>4} "
 print(f"  {'Macro F1':>10} {'':>4} {'':>4} {'':>4} {'':>7} {'':>7} {macro_f1:>7.2f}")
 print()
 
+# --- Per-type P/R/F1 Chart (Strict) ---
+strict_types = sorted(metrics_strict.keys())
+strict_precision = [round(metrics_strict[t]["precision"], 2) for t in strict_types]
+strict_recall = [round(metrics_strict[t]["recall"], 2) for t in strict_types]
+strict_f1 = [round(metrics_strict[t]["f1"], 2) for t in strict_types]
+
+show_chart({
+    "type": "bar",
+    "title": "Per-Entity-Type Metrics (Strict Matching)",
+    "labels": strict_types,
+    "datasets": [
+        {"label": "Precision", "data": strict_precision, "color": "#3b82f6"},
+        {"label": "Recall", "data": strict_recall, "color": "#10b981"},
+        {"label": "F1", "data": strict_f1, "color": "#f59e0b"},
+    ],
+    "options": {"x_label": "Entity Type", "y_label": "Score"}
+})
+
 
 # ============================================================
 # RUN EVALUATION: RELAXED MATCHING (overlap-based)
@@ -404,6 +422,24 @@ print("  NOTE: Relaxed matching gives higher scores because boundary")
 print("  errors (e.g., 'Dr. Amara Khan' vs 'Amara Khan') count as matches.")
 print("  The gap between strict and relaxed reveals boundary error rate.")
 print()
+
+# --- Per-type P/R/F1 Chart (Relaxed) ---
+relaxed_types = sorted(metrics_relaxed.keys())
+relaxed_precision = [round(metrics_relaxed[t]["precision"], 2) for t in relaxed_types]
+relaxed_recall = [round(metrics_relaxed[t]["recall"], 2) for t in relaxed_types]
+relaxed_f1 = [round(metrics_relaxed[t]["f1"], 2) for t in relaxed_types]
+
+show_chart({
+    "type": "bar",
+    "title": "Per-Entity-Type Metrics (Relaxed Matching)",
+    "labels": relaxed_types,
+    "datasets": [
+        {"label": "Precision", "data": relaxed_precision, "color": "#3b82f6"},
+        {"label": "Recall", "data": relaxed_recall, "color": "#10b981"},
+        {"label": "F1", "data": relaxed_f1, "color": "#f59e0b"},
+    ],
+    "options": {"x_label": "Entity Type", "y_label": "Score"}
+})
 
 
 # ============================================================
@@ -515,6 +551,25 @@ print("    - Off-diagonal = type confusions (gold type != predicted type)")
 print("    - (MISSED) column = entities the system failed to detect")
 print("    - (NONE) row = false positives (system predicted an entity where none exists)")
 print()
+
+# --- Confusion Matrix Heatmap ---
+heatmap_rows = all_types + ["(NONE)"]
+heatmap_cols = col_labels
+heatmap_data = []
+for row in heatmap_rows:
+    row_data = []
+    for col in heatmap_cols:
+        row_data.append(confusion[row].get(col, 0))
+    heatmap_data.append(row_data)
+
+show_chart({
+    "type": "heatmap",
+    "title": "Entity Type Confusion Matrix",
+    "x_labels": heatmap_cols,
+    "y_labels": heatmap_rows,
+    "data": heatmap_data,
+    "color_scale": "blue",
+})
 
 
 # ============================================================

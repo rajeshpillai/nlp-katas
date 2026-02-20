@@ -383,10 +383,17 @@ print(f"  {'-'*10} {'-'*30} {'-'*8} {'-'*8}  {'-'*20}")
 
 tfidf_wins = 0
 embed_wins = 0
+chart_labels = []
+chart_tfidf = []
+chart_embed = []
 
 for n1, n2, desc in comparison_pairs:
     tfidf_sim = cosine_similarity(tfidf_vectors[n1], tfidf_vectors[n2])
     embed_sim = cosine_similarity(embed_vectors[n1], embed_vectors[n2])
+
+    chart_labels.append(f"{n1}-{n2}")
+    chart_tfidf.append(round(tfidf_sim, 4))
+    chart_embed.append(round(embed_sim, 4))
 
     # Determine which is more appropriate
     is_paraphrase = "paraphrase" in desc
@@ -412,6 +419,41 @@ for n1, n2, desc in comparison_pairs:
     print(f"  {n1+'-'+n2:<10} {desc:<30} {tfidf_sim:>8.4f} {embed_sim:>8.4f}  {winner}")
 
 print()
+
+# --- Visualization: TF-IDF vs Embedding Similarity ---
+show_chart({
+    "type": "bar",
+    "title": "TF-IDF vs Embedding Similarity (Head-to-Head)",
+    "labels": chart_labels,
+    "datasets": [
+        {"label": "TF-IDF", "data": chart_tfidf, "color": "#f59e0b"},
+        {"label": "Embedding", "data": chart_embed, "color": "#3b82f6"},
+    ],
+    "options": {"x_label": "Document Pair", "y_label": "Cosine Similarity"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    x = range(len(chart_labels))
+    width = 0.35
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar([i - width/2 for i in x], chart_tfidf, width, label="TF-IDF", color="#f59e0b")
+    ax.bar([i + width/2 for i in x], chart_embed, width, label="Embedding", color="#3b82f6")
+    ax.set_xlabel("Document Pair")
+    ax.set_ylabel("Cosine Similarity")
+    ax.set_title("TF-IDF vs Embedding Similarity (Head-to-Head)")
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(chart_labels, rotation=45, ha="right")
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig("tfidf_vs_embedding.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: tfidf_vs_embedding.png]")
+except ImportError:
+    pass
 
 # ============================================================
 # WHERE EMBEDDINGS WIN: SYNONYM DETECTION

@@ -338,6 +338,27 @@ for m in train_metrics:
 print("\n  On training data, all methods have 0% OOV (by definition).")
 print("  The real test is on UNSEEN text.")
 
+# --- Training Corpus Charts ---
+train_names = [m["name"] for m in train_metrics]
+train_vocab = [m["vocab_size"] for m in train_metrics]
+train_avg = [round(m["avg_tokens"], 1) for m in train_metrics]
+
+show_chart({
+    "type": "bar",
+    "title": "Training Corpus — Vocabulary Size by Method",
+    "labels": train_names,
+    "datasets": [{"label": "Vocab Size", "data": train_vocab, "color": "#3b82f6"}],
+    "options": {"x_label": "Method", "y_label": "Vocabulary Size"}
+})
+
+show_chart({
+    "type": "bar",
+    "title": "Training Corpus — Avg Tokens per Sentence",
+    "labels": train_names,
+    "datasets": [{"label": "Avg Tokens/Sentence", "data": train_avg, "color": "#10b981"}],
+    "options": {"x_label": "Method", "y_label": "Avg Tokens per Sentence"}
+})
+
 
 # ===== TEST CORPUS METRICS =====
 
@@ -361,6 +382,33 @@ for m in test_metrics:
     print(f"  {m['name']:<12} {m['vocab_size']:>7} {m['total_tokens']:>8}"
           f" {m['avg_tokens']:>10.1f} {m['oov_count']:>5}"
           f" {m['oov_rate']:>6.1f}% {m['coverage']:>9.1f}%")
+
+
+# --- Test Corpus Charts ---
+test_names = [m["name"] for m in test_metrics]
+test_vocab = [m["vocab_size"] for m in test_metrics]
+test_avg = [round(m["avg_tokens"], 1) for m in test_metrics]
+test_oov = [round(m["oov_rate"], 1) for m in test_metrics]
+
+show_chart({
+    "type": "bar",
+    "title": "Test Corpus — Comparison Across Methods",
+    "labels": test_names,
+    "datasets": [
+        {"label": "Vocab Size (÷10)", "data": [round(v / 10, 1) for v in test_vocab], "color": "#3b82f6"},
+        {"label": "Avg Tokens/Sentence", "data": test_avg, "color": "#10b981"},
+        {"label": "OOV Rate (%)", "data": test_oov, "color": "#ef4444"},
+    ],
+    "options": {"x_label": "Method", "y_label": "Value"}
+})
+
+show_chart({
+    "type": "bar",
+    "title": "Test Corpus — OOV Rate by Method",
+    "labels": test_names,
+    "datasets": [{"label": "OOV Rate (%)", "data": test_oov, "color": "#ef4444"}],
+    "options": {"x_label": "Method", "y_label": "OOV Rate (%)"}
+})
 
 
 # ===== OOV DETAILS =====

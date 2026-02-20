@@ -158,13 +158,26 @@ for label in labels:
     print(f"  {label:>{col_width}}", end="")
 print()
 
+sim_matrix = []
 for i, (label_i, vec_i) in enumerate(zip(labels, vectors)):
+    row = []
     print(f"  {label_i:>{col_width}}", end="")
     for j, (label_j, vec_j) in enumerate(zip(labels, vectors)):
         sim = cosine_similarity(vec_i, vec_j)
+        row.append(round(sim, 3))
         print(f"  {sim:>{col_width}.3f}", end="")
+    sim_matrix.append(row)
     print()
 print()
+
+show_chart({
+    "type": "heatmap",
+    "title": "Document Cosine Similarity Matrix",
+    "x_labels": labels,
+    "y_labels": labels,
+    "data": sim_matrix,
+    "color_scale": "blue"
+})
 
 
 # --- Top similar pairs ---

@@ -236,6 +236,31 @@ print(f"\n  Word vocabulary:    {sorted(word_vocab)}")
 print(f"  Char vocabulary:    {sorted(char_vocab)}")
 print(f"  Subword vocabulary: {sorted(subword_vocab)}")
 
+# --- Vocabulary Size Chart ---
+methods = ["Word", "Character", "Subword"]
+vocab_sizes = [len(word_vocab), len(char_vocab), len(subword_vocab)]
+avg_tokens = [
+    len(all_word_tokens) / len(sentences),
+    len(all_char_tokens) / len(sentences),
+    len(all_subword_tokens) / len(sentences),
+]
+
+show_chart({
+    "type": "bar",
+    "title": "Vocabulary Size by Tokenization Method",
+    "labels": methods,
+    "datasets": [{"label": "Vocabulary Size", "data": vocab_sizes, "color": "#3b82f6"}],
+    "options": {"x_label": "Method", "y_label": "Unique Tokens"}
+})
+
+show_chart({
+    "type": "bar",
+    "title": "Average Tokens per Sentence by Method",
+    "labels": methods,
+    "datasets": [{"label": "Avg Tokens/Sentence", "data": [round(v, 1) for v in avg_tokens], "color": "#10b981"}],
+    "options": {"x_label": "Method", "y_label": "Avg Tokens per Sentence"}
+})
+
 # --- OOV Demonstration ---
 print("\n" + "=" * 70)
 print("OUT-OF-VOCABULARY (OOV) DEMONSTRATION")

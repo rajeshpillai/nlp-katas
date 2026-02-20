@@ -484,6 +484,51 @@ print(f"\n  Each head learns a DIFFERENT attention pattern.")
 print(f"  Head 1 might focus on nearby words, while Head 2")
 print(f"  might focus on syntactically related words.")
 
+# --- Visualization: Attention Heatmaps per Head ---
+for h in range(n_heads):
+    head_weights = []
+    for i in range(seq_len):
+        row = [round(result['attn_weights'][h][i][j], 3) for j in range(seq_len)]
+        head_weights.append(row)
+    show_chart({
+        "type": "heatmap",
+        "title": f"Attention Weights: Head {h + 1}",
+        "x_labels": words,
+        "y_labels": words,
+        "data": head_weights,
+        "color_scale": "blue"
+    })
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(1, n_heads, figsize=(6 * n_heads, 5))
+    if n_heads == 1:
+        axes = [axes]
+    for h in range(n_heads):
+        head_data = [[result['attn_weights'][h][i][j]
+                       for j in range(seq_len)] for i in range(seq_len)]
+        im = axes[h].imshow(head_data, cmap="Blues", vmin=0, vmax=1)
+        axes[h].set_xticks(range(seq_len))
+        axes[h].set_xticklabels(words)
+        axes[h].set_yticks(range(seq_len))
+        axes[h].set_yticklabels(words)
+        axes[h].set_title(f"Head {h + 1}")
+        for i in range(seq_len):
+            for j in range(seq_len):
+                axes[h].text(j, i, f"{head_data[i][j]:.2f}",
+                            ha="center", va="center", fontsize=9)
+    plt.colorbar(im, ax=axes[-1], fraction=0.046)
+    plt.suptitle("Attention Weights per Head")
+    plt.tight_layout()
+    plt.savefig("attention_heads.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: attention_heads.png]")
+except ImportError:
+    pass
+
 # ============================================================
 # LAYER NORM DEMONSTRATION
 # ============================================================

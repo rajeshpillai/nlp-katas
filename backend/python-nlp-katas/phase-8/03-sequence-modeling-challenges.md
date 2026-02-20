@@ -379,6 +379,8 @@ print(f"Decay factor per step: {decay_factor}")
 print()
 
 signal = initial_signal
+decay_positions = []
+decay_signals = []
 print(f"  {'Position':>8}  {'Signal':>8}  {'Remaining':>10}  Visualization")
 print(f"  {'-'*8}  {'-'*8}  {'-'*10}  {'-'*40}")
 
@@ -386,6 +388,9 @@ for pos in range(sequence_length + 1):
     pct = (signal / initial_signal) * 100
     bar_len = int(pct / 2.5)
     bar = "#" * max(bar_len, 0)
+
+    decay_positions.append(pos)
+    decay_signals.append(round(signal, 4))
 
     if pos % 4 == 0 or pos <= 3 or pos == sequence_length:
         print(f"  {pos:>8}  {signal:>8.4f}  {pct:>9.1f}%  |{bar}")
@@ -404,6 +409,36 @@ for thresh in thresholds:
     print(f"  {thresh*100:>6.1f}% signal remaining at step {steps_needed:>6.1f}")
 
 print()
+
+# --- Visualization: Signal Decay Over Sequence Length ---
+show_chart({
+    "type": "line",
+    "title": f"Signal Decay Over Sequence (decay factor = {decay_factor})",
+    "labels": [str(p) for p in decay_positions],
+    "datasets": [{"label": "Signal Strength", "data": decay_signals, "color": "#ef4444"}],
+    "options": {"x_label": "Sequence Position", "y_label": "Signal Strength"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(decay_positions, decay_signals, color="#ef4444", linewidth=2)
+    ax.fill_between(decay_positions, decay_signals, alpha=0.15, color="#ef4444")
+    ax.set_xlabel("Sequence Position")
+    ax.set_ylabel("Signal Strength")
+    ax.set_title(f"Signal Decay Over Sequence (decay factor = {decay_factor})")
+    ax.axhline(y=0.5, color="#f59e0b", linestyle="--", linewidth=1, label="50% threshold")
+    ax.axhline(y=0.1, color="#3b82f6", linestyle="--", linewidth=1, label="10% threshold")
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig("signal_decay.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: signal_decay.png]")
+except ImportError:
+    pass
 
 # ============================================================
 print("=" * 65)
@@ -426,11 +461,19 @@ print(f"  {'Seq Length':>12}  {'RNN Path':>10}  {'RNN Signal':>12}  "
       f"{'Attn Path':>10}  {'Attn Signal':>12}")
 print(f"  {'-'*12}  {'-'*10}  {'-'*12}  {'-'*10}  {'-'*12}")
 
+rnn_vs_attn_labels = []
+rnn_vs_attn_rnn = []
+rnn_vs_attn_attn = []
+
 for n in [5, 10, 20, 50, 100, 200, 500]:
     rnn_path = n - 1
     rnn_signal = 0.95 ** rnn_path
     attn_path = 1
     attn_signal = 1.0
+
+    rnn_vs_attn_labels.append(str(n))
+    rnn_vs_attn_rnn.append(round(rnn_signal, 6))
+    rnn_vs_attn_attn.append(round(attn_signal, 6))
 
     rnn_str = f"{rnn_signal:.6f}" if rnn_signal > 0.000001 else "~0.000000"
 
@@ -441,6 +484,37 @@ print()
 print("At sequence length 100: RNN retains 0.6% of the original signal.")
 print("At sequence length 500: RNN retains effectively 0% of the signal.")
 print("Attention retains 100% at ANY distance.")
+
+# --- Visualization: RNN vs Attention Signal Retention ---
+show_chart({
+    "type": "line",
+    "title": "RNN vs Attention: Signal Retention by Sequence Length",
+    "labels": rnn_vs_attn_labels,
+    "datasets": [
+        {"label": "RNN (w=0.95)", "data": rnn_vs_attn_rnn, "color": "#ef4444"},
+        {"label": "Attention", "data": rnn_vs_attn_attn, "color": "#10b981"},
+    ],
+    "options": {"x_label": "Sequence Length", "y_label": "Signal Strength"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(rnn_vs_attn_labels, rnn_vs_attn_rnn, "o-", color="#ef4444", linewidth=2, label="RNN (w=0.95)")
+    ax.plot(rnn_vs_attn_labels, rnn_vs_attn_attn, "o-", color="#10b981", linewidth=2, label="Attention")
+    ax.set_xlabel("Sequence Length")
+    ax.set_ylabel("Signal Strength")
+    ax.set_title("RNN vs Attention: Signal Retention by Sequence Length")
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig("rnn_vs_attention.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: rnn_vs_attention.png]")
+except ImportError:
+    pass
 print()
 print("This is why transformers replaced RNNs for most NLP tasks.")
 print("Attention provides direct connections between all positions,")

@@ -325,12 +325,43 @@ test_pairs = [
 test_pairs = [(a, b) for a, b in test_pairs
               if a in embeddings and b in embeddings]
 
+similarity_labels = []
+similarity_values = []
 for w1, w2 in test_pairs:
     sim = cosine_similarity(embeddings[w1], embeddings[w2])
     bar_len = int(max(0, sim) * 30)
     bar = "#" * bar_len
     print(f"  {w1:>8} <-> {w2:<8}  {sim:+.4f}  {bar}")
+    similarity_labels.append(f"{w1}-{w2}")
+    similarity_values.append(round(sim, 4))
 print()
+
+# --- Visualization: Word Pair Similarity ---
+show_chart({
+    "type": "bar",
+    "title": "Word Pair Cosine Similarity (Embedding-Based)",
+    "labels": similarity_labels,
+    "datasets": [{"label": "Cosine Similarity", "data": similarity_values, "color": "#3b82f6"}],
+    "options": {"x_label": "Word Pair", "y_label": "Cosine Similarity"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    colors = ["#3b82f6" if v > 0 else "#ef4444" for v in similarity_values]
+    ax.barh(similarity_labels, similarity_values, color=colors)
+    ax.set_xlabel("Cosine Similarity")
+    ax.set_title("Word Pair Cosine Similarity (Embedding-Based)")
+    ax.axvline(x=0, color="gray", linewidth=0.5)
+    plt.tight_layout()
+    plt.savefig("word_pair_similarity.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: word_pair_similarity.png]")
+except ImportError:
+    pass
 
 # ============================================================
 # STEP 4: FIND MOST SIMILAR WORDS
@@ -356,13 +387,48 @@ def most_similar(word, top_n=5):
     return scores[:top_n]
 
 
+nearest_neighbor_data = {}
 for word in ["cat", "king", "mat", "man"]:
     if word not in embeddings:
         continue
     neighbors = most_similar(word, top_n=5)
     neighbor_str = ", ".join(f"{w} ({s:+.3f})" for w, s in neighbors)
     print(f"  {word:>8} -> {neighbor_str}")
+    nearest_neighbor_data[word] = neighbors
 print()
+
+# --- Visualization: Nearest Neighbors per Word ---
+nn_colors = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"]
+for idx, (word, neighbors) in enumerate(nearest_neighbor_data.items()):
+    nn_labels = [w for w, s in neighbors]
+    nn_scores = [round(s, 3) for w, s in neighbors]
+    show_chart({
+        "type": "bar",
+        "title": f"Nearest Neighbors: '{word}'",
+        "labels": nn_labels,
+        "datasets": [{"label": "Similarity", "data": nn_scores, "color": nn_colors[idx % len(nn_colors)]}],
+        "options": {"x_label": "Neighbor Word", "y_label": "Cosine Similarity"}
+    })
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    axes = axes.flatten()
+    for idx, (word, neighbors) in enumerate(nearest_neighbor_data.items()):
+        nn_labels = [w for w, s in neighbors]
+        nn_scores = [s for w, s in neighbors]
+        axes[idx].barh(nn_labels, nn_scores, color=nn_colors[idx % len(nn_colors)])
+        axes[idx].set_title(f"Nearest Neighbors: '{word}'")
+        axes[idx].set_xlabel("Cosine Similarity")
+    plt.tight_layout()
+    plt.savefig("nearest_neighbors.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: nearest_neighbors.png]")
+except ImportError:
+    pass
 
 # ============================================================
 # STEP 5: WORD ANALOGIES (Vector Arithmetic)

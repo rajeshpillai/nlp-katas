@@ -591,6 +591,55 @@ print()
 print("  Key insight: each technique is a different REPRESENTATION CHOICE.")
 print("  Newer is not always better -- it depends on the task and constraints.")
 
+# --- Visualization: Capability Comparison ---
+# Assign a numeric capability score (1-6 scale) based on technique sophistication
+capability_names = [name for name, rep, good, bad, speed in comparison]
+# Score each technique on multiple dimensions for a grouped bar chart
+# Scores: 1=minimal, 2=basic, 3=moderate, 4=good, 5=excellent
+cap_word_meaning = [1, 1, 3, 4, 5, 5]    # Understanding word meaning
+cap_word_order =   [1, 1, 1, 4, 5, 5]    # Handling word order
+cap_speed =        [5, 5, 4, 2, 2, 2]    # Inference speed
+cap_interpretability = [5, 5, 3, 2, 1, 1] # Interpretability
+
+show_chart({
+    "type": "bar",
+    "title": "NLP Technique Capabilities (1=minimal, 5=excellent)",
+    "labels": capability_names,
+    "datasets": [
+        {"label": "Word Meaning", "data": cap_word_meaning, "color": "#3b82f6"},
+        {"label": "Word Order", "data": cap_word_order, "color": "#10b981"},
+        {"label": "Speed", "data": cap_speed, "color": "#f59e0b"},
+        {"label": "Interpretability", "data": cap_interpretability, "color": "#8b5cf6"},
+    ],
+    "options": {"x_label": "Technique", "y_label": "Score (1-5)"}
+})
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = list(range(len(capability_names)))
+    width = 0.18
+    ax.bar([i - 1.5*width for i in x], cap_word_meaning, width, label="Word Meaning", color="#3b82f6")
+    ax.bar([i - 0.5*width for i in x], cap_word_order, width, label="Word Order", color="#10b981")
+    ax.bar([i + 0.5*width for i in x], cap_speed, width, label="Speed", color="#f59e0b")
+    ax.bar([i + 1.5*width for i in x], cap_interpretability, width, label="Interpretability", color="#8b5cf6")
+    ax.set_xlabel("Technique")
+    ax.set_ylabel("Score (1-5)")
+    ax.set_title("NLP Technique Capabilities")
+    ax.set_xticks(x)
+    ax.set_xticklabels(capability_names, rotation=30, ha="right")
+    ax.legend()
+    ax.set_ylim(0, 6)
+    plt.tight_layout()
+    plt.savefig("capability_comparison.png", dpi=100)
+    plt.close()
+    print("  [Saved matplotlib chart: capability_comparison.png]")
+except ImportError:
+    pass
+
 
 # ============================================================
 # PRACTICAL DECISION EXERCISE

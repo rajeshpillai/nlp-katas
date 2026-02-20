@@ -268,6 +268,22 @@ for query in queries:
         print(f"  {rank}. [{score:.4f}] {name}: {corpus[name][:70]}...")
     print()
 
+    # Visualize search result scores for this query
+    result_labels = [name for name, score in results]
+    result_scores = [round(score, 4) for name, score in results]
+    query_colors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]
+    show_chart({
+        "type": "bar",
+        "title": f"Search Results: \"{query}\"",
+        "labels": result_labels,
+        "datasets": [{
+            "label": "Cosine Similarity",
+            "data": result_scores,
+            "color": query_colors[queries.index(query) % len(query_colors)]
+        }],
+        "options": {"x_label": "Document", "y_label": "Relevance Score"}
+    })
+
 # --- Show IDF values for selected words ---
 print("=" * 55)
 print("  IDF VALUES (higher = rarer = more discriminating)")

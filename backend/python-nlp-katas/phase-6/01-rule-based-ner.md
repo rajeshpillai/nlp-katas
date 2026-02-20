@@ -366,10 +366,38 @@ for label, count in sorted(label_counts.items(), key=lambda x: -x[1]):
     print(f"    {label:>8}: {count:>3}  {bar}")
 
 print()
+
+# --- Entity Count by Type Chart ---
+type_labels = [label for label, count in sorted(label_counts.items(), key=lambda x: -x[1])]
+type_values = [count for label, count in sorted(label_counts.items(), key=lambda x: -x[1])]
+type_colors = {"PERSON": "#3b82f6", "ORG": "#10b981", "LOCATION": "#f59e0b", "DATE": "#8b5cf6"}
+show_chart({
+    "type": "bar",
+    "title": "Entity Counts by Type",
+    "labels": type_labels,
+    "datasets": [{
+        "label": "Count",
+        "data": type_values,
+        "color": "#3b82f6",
+    }],
+    "options": {"x_label": "Entity Type", "y_label": "Count"}
+})
+
 print("  Entities by rule:")
 for rule, count in sorted(rule_counts.items(), key=lambda x: -x[1]):
     bar = "#" * count
     print(f"    {rule:>16}: {count:>3}  {bar}")
+
+# --- Entity Count by Rule Chart ---
+rule_labels = [rule for rule, count in sorted(rule_counts.items(), key=lambda x: -x[1])]
+rule_values = [count for rule, count in sorted(rule_counts.items(), key=lambda x: -x[1])]
+show_chart({
+    "type": "bar",
+    "title": "Entity Counts by Rule",
+    "labels": rule_labels,
+    "datasets": [{"label": "Count", "data": rule_values, "color": "#f59e0b"}],
+    "options": {"x_label": "Rule", "y_label": "Count"}
+})
 
 print()
 print("  Key observations:")

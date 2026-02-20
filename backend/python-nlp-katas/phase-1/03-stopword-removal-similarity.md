@@ -136,6 +136,10 @@ doc_pairs = [
 
 print("=== Stopword Removal and Document Similarity ===\n")
 
+chart_labels = []
+sims_with = []
+sims_without = []
+
 for doc1, doc2, description in doc_pairs:
     words1 = tokenize(doc1)
     words2 = tokenize(doc2)
@@ -144,6 +148,10 @@ for doc1, doc2, description in doc_pairs:
 
     sim_with = word_overlap_similarity(words1, words2)
     sim_without = word_overlap_similarity(content1, content2)
+
+    chart_labels.append(description)
+    sims_with.append(round(sim_with, 3))
+    sims_without.append(round(sim_without, 3))
 
     print(f"--- {description} ---")
     print(f"  Doc 1: '{doc1}'")
@@ -156,6 +164,17 @@ for doc1, doc2, description in doc_pairs:
     direction = "increased" if change > 0 else "decreased" if change < 0 else "unchanged"
     print(f"  Change: {change:+.3f} ({direction})")
     print()
+
+show_chart({
+    "type": "bar",
+    "title": "Similarity: With vs Without Stopwords",
+    "labels": chart_labels,
+    "datasets": [
+        {"label": "With stopwords", "data": sims_with, "color": "#3b82f6"},
+        {"label": "Without stopwords", "data": sims_without, "color": "#10b981"},
+    ],
+    "options": {"x_label": "Document Pair", "y_label": "Jaccard Similarity"}
+})
 
 
 # === Show what stopwords dominate ===
