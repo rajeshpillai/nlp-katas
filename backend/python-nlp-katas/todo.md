@@ -11,46 +11,46 @@
 - [x] Measure how stopword removal changes document similarity
 
 ## Phase 2 — Bag of Words (BoW)
-- [ ] Build BoW from scratch
-- [ ] Visualize document vectors
-- [ ] Compare documents using BoW
+- [x] Build BoW from scratch
+- [x] Visualize document vectors
+- [x] Compare documents using BoW
 
 ## Phase 3 — TF-IDF
-- [ ] Compute TF-IDF manually
-- [ ] Compare similarity using BoW vs TF-IDF
-- [ ] Visualize word importance
+- [x] Compute TF-IDF manually
+- [x] Compare similarity using BoW vs TF-IDF
+- [x] Visualize word importance
 
 ## Phase 4 — Similarity & Classical NLP Tasks
-- [ ] Compute cosine similarity between document pairs
-- [ ] Build a simple text search engine
-- [ ] Cluster documents by topic
+- [x] Compute cosine similarity between document pairs
+- [x] Build a simple text search engine
+- [x] Cluster documents by topic
 
 ## Phase 5 — Tokenization (Deep Dive)
-- [ ] Tokenize text using word, character, and subword methods
-- [ ] Implement BPE from scratch
-- [ ] Compare vocabulary sizes and OOV handling across methods
+- [x] Tokenize text using word, character, and subword methods
+- [x] Implement BPE from scratch
+- [x] Compare vocabulary sizes and OOV handling across methods
 
 ## Phase 6 — Named Entity Recognition (NER)
-- [ ] Rule-based NER
-- [ ] Simple ML-based NER
-- [ ] Error analysis
+- [x] Rule-based NER
+- [x] Simple ML-based NER
+- [x] Error analysis
 
 ## Phase 7 — Small Neural Text Models
-- [ ] Train small embedding-based models
-- [ ] Visualize embedding spaces
-- [ ] Compare neural vs TF-IDF models
+- [x] Train small embedding-based models
+- [x] Visualize embedding spaces
+- [x] Compare neural vs TF-IDF models
 
 ## Phase 8 — Context & Sequence Modeling
-- [ ] Show how word order changes meaning (BoW failure cases)
-- [ ] Compare context-aware vs context-free representations
-- [ ] Demonstrate vanishing gradient problem in sequences (conceptual)
+- [x] Show how word order changes meaning (BoW failure cases)
+- [x] Compare context-aware vs context-free representations
+- [x] Demonstrate vanishing gradient problem in sequences (conceptual)
 
 ## Phase 9 — Transformer Architecture (Core Concepts)
-- [ ] Visualize attention weights
-- [ ] Build a tiny transformer block
-- [ ] Compare encoder-only vs decoder-only tasks
+- [x] Visualize attention weights
+- [x] Build a tiny transformer block
+- [x] Compare encoder-only vs decoder-only tasks
 
 ## Phase 10 — Modern NLP Pipelines (Awareness)
-- [ ] Pretraining vs fine-tuning overview
-- [ ] Encoder-only vs decoder-only models comparison
-- [ ] Where LLMs fit in the NLP stack
+- [x] Pretraining vs fine-tuning overview
+- [x] Encoder-only vs decoder-only models comparison
+- [x] Where LLMs fit in the NLP stack
