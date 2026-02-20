@@ -6,7 +6,7 @@ export function ThemeToggle() {
 
   return (
     <button class="theme-toggle" onClick={toggle} aria-label="Toggle theme">
-      {theme() === "light" ? "Dark" : "Light"}
+      {theme() === "light" ? "\u263E" : "\u2600"}
     </button>
   );
 }
