@@ -1,4 +1,6 @@
-import { createCodeMirror, createEditorControlledValue } from "solid-codemirror";
+import { onMount, onCleanup, createEffect } from "solid-js";
+import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
+import { EditorState, Compartment } from "@codemirror/state";
 import { python } from "@codemirror/lang-python";
 import { indentUnit } from "@codemirror/language";
 import {
@@ -7,7 +9,6 @@ import {
   history,
   indentWithTab,
 } from "@codemirror/commands";
-import { keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
 import { useTheme } from "../../context/theme-context";
 import {
   editorTheme,
@@ -27,41 +28,70 @@ interface Props {
 }
 
 export function CodePanel(props: Props) {
+  let editorEl!: HTMLDivElement;
+  let view: EditorView;
+  const highlightCompartment = new Compartment();
   const { theme } = useTheme();
 
-  const { ref, editorView, createExtension } = createCodeMirror({
-    value: props.code,
-    onValueChange: props.onCodeChange,
+  onMount(() => {
+    const state = EditorState.create({
+      doc: props.code,
+      extensions: [
+        python(),
+        history(),
+        lineNumbers(),
+        highlightActiveLine(),
+        indentUnit.of("    "),
+        keymap.of([
+          {
+            key: "Ctrl-Enter",
+            mac: "Cmd-Enter",
+            run: () => {
+              props.onRun();
+              return true;
+            },
+          },
+          indentWithTab,
+          ...defaultKeymap,
+          ...historyKeymap,
+        ]),
+        editorTheme,
+        highlightCompartment.of(
+          theme() === "dark" ? darkSyntaxHighlighting : lightSyntaxHighlighting
+        ),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            props.onCodeChange(update.state.doc.toString());
+          }
+        }),
+      ],
+    });
+    view = new EditorView({ state, parent: editorEl });
   });
 
-  createEditorControlledValue(editorView, () => props.code);
+  // Sync external code changes (Reset button)
+  createEffect(() => {
+    if (!view) return;
+    const current = view.state.doc.toString();
+    if (current !== props.code) {
+      view.dispatch({
+        changes: { from: 0, to: current.length, insert: props.code },
+      });
+    }
+  });
 
-  createExtension(python());
-  createExtension(history());
-  createExtension(lineNumbers());
-  createExtension(highlightActiveLine());
-  createExtension(indentUnit.of("    "));
+  // Reactive theme switching
+  createEffect(() => {
+    if (!view) return;
+    const t = theme();
+    view.dispatch({
+      effects: highlightCompartment.reconfigure(
+        t === "dark" ? darkSyntaxHighlighting : lightSyntaxHighlighting
+      ),
+    });
+  });
 
-  createExtension(
-    keymap.of([
-      {
-        key: "Ctrl-Enter",
-        mac: "Cmd-Enter",
-        run: () => {
-          props.onRun();
-          return true;
-        },
-      },
-      indentWithTab,
-      ...defaultKeymap,
-      ...historyKeymap,
-    ])
-  );
-
-  createExtension(editorTheme);
-  createExtension(() =>
-    theme() === "dark" ? darkSyntaxHighlighting : lightSyntaxHighlighting
-  );
+  onCleanup(() => view?.destroy());
 
   return (
     <div class="code-panel">
@@ -85,7 +115,7 @@ export function CodePanel(props: Props) {
           {props.maximized ? "\u29C9" : "\u2922"}
         </button>
       </div>
-      <div ref={ref} class="code-panel-editor" />
+      <div ref={editorEl!} class="code-panel-editor" />
     </div>
   );
 }
