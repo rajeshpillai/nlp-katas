@@ -2,6 +2,7 @@ import { onMount, onCleanup, createEffect } from "solid-js";
 import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
 import { EditorState, Compartment } from "@codemirror/state";
 import { python } from "@codemirror/lang-python";
+import { rust } from "@codemirror/lang-rust";
 import { indentUnit } from "@codemirror/language";
 import {
   defaultKeymap,
@@ -25,6 +26,7 @@ interface Props {
   running: boolean;
   maximized: boolean;
   onToggleMaximize: () => void;
+  language: "python" | "rust";
 }
 
 export function CodePanel(props: Props) {
@@ -37,7 +39,7 @@ export function CodePanel(props: Props) {
     const state = EditorState.create({
       doc: props.code,
       extensions: [
-        python(),
+        props.language === "rust" ? rust() : python(),
         history(),
         lineNumbers(),
         highlightActiveLine(),

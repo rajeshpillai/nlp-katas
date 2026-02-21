@@ -21,11 +21,16 @@ nlp-katas/
 │   ├── package.json
 │   └── vite.config.ts                (port 3000, proxies /api to backend)
 ├── backend/
-│   └── python-nlp-katas/             (Python track: FastAPI backend + kata content)
-│       ├── main.py                   (FastAPI entry, port 8000)
-│       ├── requirements.txt
-│       ├── app/                      (routes, models, services)
-│       ├── phase-0/                  (kata markdown files)
+│   ├── python-nlp-katas/             (Python track: FastAPI backend + kata content)
+│   │   ├── main.py                   (FastAPI entry, port 8000)
+│   │   ├── requirements.txt
+│   │   ├── app/                      (routes, models, services)
+│   │   ├── content/phase-0/          (kata markdown files)
+│   │   └── todo.md
+│   └── rust-nlp-katas/               (Rust track: Axum backend + kata content)
+│       ├── src/                      (main, routes, models, services)
+│       ├── helpers/nlp_katas_viz.rs  (viz helpers prepended to user code)
+│       ├── content/phase-0/          (kata markdown files)
 │       └── todo.md
 ├── todo.md                           (global checklist)
 └── CLAUDE.md

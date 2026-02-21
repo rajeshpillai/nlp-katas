@@ -16,12 +16,22 @@
 - [x] Phase 10 — Modern NLP Pipelines (Awareness) — 3 katas
 
 ### Rust (`rust-nlp-katas`)
-- [ ] Not started
+- [x] Phase 0 — Language & Text (Foundations) — 3 katas
+- [x] Phase 1 — Text Preprocessing — 3 katas
+- [x] Phase 2 — Bag of Words (BoW) — 3 katas
+- [x] Phase 3 — TF-IDF — 3 katas
+- [x] Phase 4 — Similarity & Classical NLP Tasks — 3 katas
+- [x] Phase 5 — Tokenization (Deep Dive) — 3 katas
+- [x] Phase 6 — Named Entity Recognition (NER) — 3 katas
+- [x] Phase 7 — Small Neural Text Models — 3 katas
+- [x] Phase 8 — Context & Sequence Modeling — 3 katas
+- [x] Phase 9 — Transformer Architecture (Core Concepts) — 3 katas
+- [x] Phase 10 — Modern NLP Pipelines (Awareness) — 3 katas
 
 ## Frontend
 - [x] SolidJS + Tailwind CSS v4 setup
 - [x] Kata markdown renderer
-- [x] CodeMirror 6 code editor with Python syntax highlighting
+- [x] CodeMirror 6 code editor with Python and Rust syntax highlighting
 - [x] Resizable code/output split panels
 - [x] Collapsible sidebar with hamburger menu
 - [x] Dark/light theme toggle (sun/moon icons)
@@ -29,10 +39,13 @@
 - [x] Rich output panel (HTML, SVG, Chart.js, base64 images)
 
 ## Backend
-- [x] FastAPI with subprocess-based code execution
+- [x] FastAPI with subprocess-based code execution (Python track, port 8000)
+- [x] Axum with rustc-based code execution (Rust track, port 8001)
 - [x] Kata content API (markdown serving)
 - [x] Python viz helper module (show_chart, show_html, show_svg, plt.show patch)
-- [x] Matplotlib support
+- [x] Rust viz helper module (show_chart, show_html, show_svg, chart builders)
+- [x] Matplotlib support (Python track)
+- [x] Multi-track proxy routing (vite proxy → port 8000/8001 by track)
 
 ## Rich Visualizations
 - [x] Chart.js bar charts, line charts, scatter plots
@@ -68,6 +81,6 @@
 - [ ] **Markdown TOC sidebar** — show concept section headings for quick navigation within a kata
 - [ ] **Interactive experiments** — add editable text inputs in the concept tab (not just the code tab)
 - [ ] **Landing page** — proper homepage with track selection, learning path overview, and getting started guide
-- [ ] **Rust track** — port katas to Rust with a Rust backend execution environment
+- [x] **Rust track** — port katas to Rust with a Rust backend execution environment
 - [ ] **Multi-language support** — allow switching between Python/Rust implementations of the same kata
 - [ ] **User accounts** — optional login to sync progress across devices

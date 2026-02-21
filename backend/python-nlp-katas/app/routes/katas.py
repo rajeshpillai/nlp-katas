@@ -8,7 +8,7 @@ router = APIRouter()
 TRACK_ROOT = Path(__file__).resolve().parents[2]
 
 CONTENT_DIRS = {
-    "python-nlp": TRACK_ROOT,
+    "python-nlp": TRACK_ROOT / "content",
 }
 
 PYTHON_NLP_KATAS: list[dict] = [

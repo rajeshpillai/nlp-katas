@@ -49,6 +49,7 @@ export function KataPage() {
             <KataWorkspace
               markdown={content()!}
               kataId={params.kataId}
+              trackId={params.trackId}
             />
           </Show>
         </Show>

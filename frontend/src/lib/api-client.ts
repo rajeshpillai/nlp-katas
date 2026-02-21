@@ -54,8 +54,9 @@ export async function fetchKataContent(
 export async function executeCode(
   code: string,
   kataId: string,
+  trackId: string = "python-nlp",
 ): Promise<ExecutionResult> {
-  const res = await fetch(`${BASE}/execute`, {
+  const res = await fetch(`${BASE}/execute/${trackId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code, kata_id: kataId }),

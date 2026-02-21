@@ -13,9 +13,9 @@ TRACKS = [
     {
         "id": "rust-nlp",
         "name": "Rust NLP",
-        "description": "NLP fundamentals implemented in Rust. "
-        "Coming soon.",
-        "status": "coming-soon",
+        "description": "Learn NLP from foundations to transformers using Rust. "
+        "Build intuition for how text becomes numbers with systems-level control.",
+        "status": "active",
     },
 ]
 
